@@ -228,7 +228,7 @@ small,
   letter-spacing: 0.06em;
 }
 .controls #run {
-  grid-column: span 2;
+  grid-column: auto;
 }
 .controls .ghost {
   border-color: var(--line);
@@ -320,7 +320,7 @@ small,
 }
 .board-wrap {
   position: relative;
-  aspect-ratio: 1.1;
+  aspect-ratio: 1;
   padding: 10px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -332,8 +332,11 @@ small,
   display: grid;
   width: 100%;
   height: 100%;
+  gap: 2px;
   overflow: hidden;
   border-radius: 5px;
+  background: #f7c98b;
+  box-shadow: inset 0 0 0 1px rgba(255, 239, 203, 0.9);
 }
 .cell {
   min-width: 0;
@@ -345,18 +348,6 @@ small,
 }
 .cell.visited {
   background: rgba(255, 192, 132, 0.42);
-}
-.step {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  width: 100%;
-  height: 100%;
-  place-items: center;
-  color: rgba(255, 255, 255, 0.7);
-  font:
-    9px 'DM Mono',
-    monospace;
 }
 .path {
   position: absolute;
@@ -370,9 +361,59 @@ small,
 .path polyline {
   fill: none;
   stroke: #ffe0a5;
-  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 0.85;
   vector-effect: non-scaling-stroke;
-  opacity: 0.9;
+  opacity: 0.8;
+}
+.blue .board-wrap {
+  border-color: rgba(128, 202, 255, 0.58);
+  background: #0d1927;
+}
+.blue .board {
+  background: #75c9ff;
+  box-shadow: inset 0 0 0 1px rgba(220, 247, 255, 0.92);
+}
+.blue .cell {
+  background: #132940;
+}
+.blue .cell:nth-child(odd) {
+  background: #28506e;
+}
+.blue .cell.visited {
+  background: #3f9cce;
+}
+.blue .path polyline {
+  stroke: #d9f4ff;
+}
+.blue .knight {
+  background: #e5f7ff;
+  color: #123351;
+}
+.coral .board-wrap {
+  border-color: rgba(255, 156, 135, 0.6);
+  background: #291417;
+}
+.coral .board {
+  background: #ffab94;
+  box-shadow: inset 0 0 0 1px rgba(255, 230, 222, 0.92);
+}
+.coral .cell {
+  background: #3d1b24;
+}
+.coral .cell:nth-child(odd) {
+  background: #75343a;
+}
+.coral .cell.visited {
+  background: #c8675f;
+}
+.coral .path polyline {
+  stroke: #fff0e9;
+}
+.coral .knight {
+  background: #fff0e9;
+  color: #571f28;
 }
 .knight {
   position: absolute;

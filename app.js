@@ -18,12 +18,22 @@ function legal(position, size) {
   const column = position % size;
 
   return moves
-    .map(([rowOffset, columnOffset]) => (row + rowOffset) * size + column + columnOffset)
-    .filter((next) => {
-      const nextRow = Math.floor(next / size);
-      const nextColumn = next % size;
-      return nextRow >= 0 && nextColumn >= 0 && nextRow < size && nextColumn < size;
-    });
+    .map(([rowOffset, columnOffset]) => ({ row: row + rowOffset, column: column + columnOffset }))
+    .filter(({ row: nextRow, column: nextColumn }) => nextRow >= 0 && nextColumn >= 0 && nextRow < size && nextColumn < size)
+    .map(({ row: nextRow, column: nextColumn }) => nextRow * size + nextColumn);
+}
+
+function isKnightMove(from, to, size) {
+  const rowDistance = Math.abs(Math.floor(from / size) - Math.floor(to / size));
+  const columnDistance = Math.abs((from % size) - (to % size));
+  return (rowDistance === 2 && columnDistance === 1) || (rowDistance === 1 && columnDistance === 2);
+}
+
+function isValidTour(path, size, closed) {
+  if (path.length !== size * size || new Set(path).size !== path.length) return false;
+  if (!path.every((square) => Number.isInteger(square) && square >= 0 && square < size * size)) return false;
+  if (!path.slice(1).every((square, index) => isKnightMove(path[index], square, size))) return false;
+  return !closed || isKnightMove(path[path.length - 1], path[0], size);
 }
 
 function solve(size, start, heuristic, closed, budget) {
@@ -57,7 +67,8 @@ function solve(size, start, heuristic, closed, budget) {
     return false;
   }
 
-  const success = dfs(start);
+  const found = dfs(start);
+  const success = found && isValidTour(path, size, closed);
   return {
     path: success ? path : [...path],
     nodes,
@@ -71,6 +82,7 @@ function setupBoard(id, size) {
   const board = $(id);
   board.replaceChildren();
   board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  board.style.gridTemplateRows = `repeat(${size}, 1fr)`;
 
   for (let index = 0; index < size * size; index += 1) {
     const cell = document.createElement('div');
@@ -80,6 +92,8 @@ function setupBoard(id, size) {
 
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.classList.add('path');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('preserveAspectRatio', 'none');
   const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
   svg.append(polyline);
   board.append(svg);
@@ -98,15 +112,24 @@ function placeKnight(ui, position, size) {
   ui.knight.style.top = `${((row + 0.5) / size) * 100}%`;
 }
 
+function clearBoardTrail(ui) {
+  ui.cells.forEach((cell) => {
+    cell.classList.remove('visited');
+    cell.replaceChildren();
+  });
+  ui.polyline.removeAttribute('points');
+}
+
 function renderPath(ui, path, size, visibleMoves) {
-  const points = [];
-  path.slice(0, visibleMoves).forEach((position, index) => {
-    const row = Math.floor(position / size);
-    const column = position % size;
-    points.push(`${((column + 0.5) / size) * 100},${((row + 0.5) / size) * 100}`);
+  path.slice(0, visibleMoves).forEach((position) => {
     const cell = ui.cells[position];
     cell.classList.add('visited');
-    if (index % 7 === 0) cell.innerHTML = `<span class="step">${index + 1}</span>`;
+  });
+  const trail = path.slice(Math.max(0, visibleMoves - 3), visibleMoves);
+  const points = trail.map((position) => {
+    const row = Math.floor(position / size);
+    const column = position % size;
+    return `${((column + 0.5) / size) * 100},${((row + 0.5) / size) * 100}`;
   });
   ui.polyline.setAttribute('points', points.join(' '));
   if (visibleMoves) placeKnight(ui, path[visibleMoves - 1], size);
@@ -123,32 +146,46 @@ function setMetrics(prefix, result, visibleMoves) {
   $(`${prefix}Progress`).style.width = `${(visibleMoves / result.path.length) * 100}%`;
 }
 
-async function animate(prefix, ui, result, size, token) {
+async function animate(prefix, ui, result, size, token, loop) {
   const delay = Math.max(55, Number($('speed').value));
   const jump = Math.round(delay * 0.78);
+  const repeat = loop && result.success;
   ui.knight.style.setProperty('--jump', `${jump}ms`);
-  renderPath(ui, result.path, size, 1);
-  setMetrics(prefix, result, 1);
+  while (token === runId) {
+    clearBoardTrail(ui);
+    renderPath(ui, result.path, size, 1);
+    setMetrics(prefix, result, 1);
 
-  for (let move = 2; move <= result.path.length; move += 1) {
-    if (token !== runId) return;
-    placeKnight(ui, result.path[move - 1], size);
+    for (let move = 2; move <= result.path.length; move += 1) {
+      if (token !== runId) return;
+      placeKnight(ui, result.path[move - 1], size);
+      await new Promise((resolve) => setTimeout(resolve, jump));
+      if (token !== runId) return;
+      renderPath(ui, result.path, size, move);
+      setMetrics(prefix, result, move);
+      await new Promise((resolve) => setTimeout(resolve, delay - jump));
+    }
+
+    if (!repeat) {
+      const status = result.success
+        ? $('closed').checked
+          ? 'CLOSED \u2713'
+          : 'OPEN \u2713'
+        : result.capped
+          ? 'LIMITED'
+          : 'NO TOUR';
+      $(`${prefix}Status`).textContent = status;
+      $(`${prefix}Status`).style.color = result.success ? '#ffd179' : '#ffaaa7';
+      return;
+    }
+
+    $(`${prefix}Status`).textContent = 'LOOPING \u21bb';
+    $(`${prefix}Status`).style.color = '#8fe39a';
+    placeKnight(ui, result.path[0], size);
     await new Promise((resolve) => setTimeout(resolve, jump));
-    renderPath(ui, result.path, size, move);
-    setMetrics(prefix, result, move);
+    if (token !== runId) return;
+    renderPath(ui, [...result.path, result.path[0]], size, result.path.length + 1);
     await new Promise((resolve) => setTimeout(resolve, delay - jump));
-  }
-
-  if (token === runId) {
-    const status = result.success
-      ? $('closed').checked
-        ? 'CLOSED \u2713'
-        : 'OPEN \u2713'
-      : result.capped
-        ? 'LIMITED'
-        : 'NO TOUR';
-    $(`${prefix}Status`).textContent = status;
-    $(`${prefix}Status`).style.color = result.success ? '#ffd179' : '#ffaaa7';
   }
 }
 
@@ -177,6 +214,7 @@ function settings() {
     size: Number($('size').value),
     start: Number($('start').value),
     closed: $('closed').checked,
+    loop: $('closed').checked && $('loop').checked,
     budget: Number($('budget').value),
   };
 }
@@ -212,12 +250,17 @@ async function run(one) {
         `${prefix === 'warn' ? 'Warnsdorff' : 'Backtracking'} examined ${result.nodes.toLocaleString()} positions`,
     )
     .join(' \u00b7 ');
+  const isLooping = currentSettings.loop && jobs.some(({ result }) => result.success);
+  $('run').textContent = isLooping ? 'LOOPING\u2026' : 'ANIMATING\u2026';
+  if (isLooping) $('topStatus').textContent = 'LOOPING';
   $('insightTitle').textContent = jobs.some(({ result }) => result.success)
     ? 'A tour was found. Watch every landing lock to the trail.'
     : 'No completed route in this search budget.';
   $('insightText').textContent = `${report}. Increase the budget or switch to an open tour to explore more paths.`;
 
-  await Promise.all(jobs.map(({ prefix, ui, result }) => animate(prefix, ui, result, currentSettings.size, token)));
+  await Promise.all(
+    jobs.map(({ prefix, ui, result }) => animate(prefix, ui, result, currentSettings.size, token, currentSettings.loop)),
+  );
   if (token === runId) {
     $('topStatus').textContent = 'COMPLETE';
     $('run').innerHTML = '<span>&#9654;</span> RACE BOTH';
@@ -254,11 +297,16 @@ $('speed').addEventListener('input', (event) => {
 $('budget').addEventListener('input', (event) => {
   $('budgetValue').textContent = `${Number(event.target.value) / 1000}k`;
 });
-$('closed').addEventListener('change', reset);
+$('closed').addEventListener('change', () => {
+  $('loop').disabled = !$('closed').checked;
+  reset();
+});
+$('loop').addEventListener('change', reset);
 $('run').addEventListener('click', () => run());
 $('runWarn').addEventListener('click', () => run('warn'));
 $('runBack').addEventListener('click', () => run('back'));
 $('reset').addEventListener('click', reset);
 
 updateStartOptions(Number($('size').value));
+$('loop').disabled = !$('closed').checked;
 reset();

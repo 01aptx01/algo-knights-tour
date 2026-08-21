@@ -53,8 +53,8 @@
           ><input id="size" type="range" min="5" max="10" value="8"
         /></label>
         <label
-          >ANIMATION <output id="speedValue" for="speed">115 ms</output
-          ><input id="speed" type="range" min="35" max="350" value="115"
+          >ANIMATION <output id="speedValue" for="speed">500 ms</output
+          ><input id="speed" type="range" min="50" max="5000" step="50" value="500"
         /></label>
         <label
           >START SQUARE
@@ -66,6 +66,9 @@
         /></label>
         <label class="toggle-label"
           >TOUR TYPE <span><b>Closed loop</b><input id="closed" type="checkbox" checked /><i></i></span
+        ></label>
+        <label class="toggle-label"
+          >LOOP <span><b>Repeat tour</b><input id="loop" type="checkbox" checked /><i></i></span
         ></label>
         <button id="run" type="button"><span>&#9654;</span> RACE BOTH</button>
         <button id="reset" class="ghost" type="button" aria-label="Reset simulation">&#8634;</button>
