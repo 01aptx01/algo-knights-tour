@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An interactive comparison of Warnsdorff's heuristic and backtracking for the knight's tour problem."
+    />
+    <title>Knight's Tour &middot; Luminous Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="aurora a1"></div>
+    <div class="aurora a2"></div>
+    <div class="noise"></div>
+
+    <header>
+      <a class="brand" href="#top" aria-label="Knight Lab home">
+        <span class="brand-mark">&#9822;</span><span>Knight<span>/</span>Lab</span>
+      </a>
+      <div class="header-pill"><i></i> CLOSED TOUR ENGINE <b id="topStatus">READY</b></div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">ALGORITHM VISUALIZER &middot; 01</p>
+          <h1>Make every move<br /><em>matter.</em></h1>
+          <p class="lede">
+            Watch two solvers race to complete a closed knight's tour. One trusts the board. One explores every
+            possibility.
+          </p>
+        </div>
+        <div class="hero-orbit" aria-hidden="true">
+          <div class="orbit orbit-1"></div>
+          <div class="orbit orbit-2"></div>
+          <div class="floating-knight">&#9822;</div>
+          <span>64<br /><small>SQUARES</small></span>
+        </div>
+      </section>
+
+      <section class="controls glass" aria-label="Simulation controls">
+        <label
+          >BOARD <output id="sizeValue" for="size">8 &times; 8</output
+          ><input id="size" type="range" min="5" max="10" value="8"
+        /></label>
+        <label
+          >ANIMATION <output id="speedValue" for="speed">115 ms</output
+          ><input id="speed" type="range" min="35" max="350" value="115"
+        /></label>
+        <label
+          >START SQUARE
+          <select id="start" aria-label="Start square"></select
+        ></label>
+        <label
+          >SEARCH BUDGET <output id="budgetValue" for="budget">80k</output
+          ><input id="budget" type="range" min="10000" max="300000" step="10000" value="80000"
+        /></label>
+        <label class="toggle-label"
+          >TOUR TYPE <span><b>Closed loop</b><input id="closed" type="checkbox" checked /><i></i></span
+        ></label>
+        <button id="run" type="button"><span>&#9654;</span> RACE BOTH</button>
+        <button id="reset" class="ghost" type="button" aria-label="Reset simulation">&#8634;</button>
+      </section>
+
+      <div class="caption">
+        <span>LIVE DUAL SIMULATION</span>
+        <p>Closed tour required <i></i> Knight must return to its origin</p>
+      </div>
+      <section class="arena">
+        <article class="solver blue glass" id="warnCard">
+          <div class="solver-head">
+            <div>
+              <p class="eyebrow"><i></i> HEURISTIC</p>
+              <h2>Warnsdorff's <span>Rule</span></h2>
+              <p class="method">Lowest onward-degree first</p>
+            </div>
+            <div class="complexity">SMART PATH<br /><b>O(N)</b></div>
+          </div>
+          <button class="play-one" id="runWarn" type="button">&#9654; PLAY WARNSDORFF</button>
+          <div class="board-wrap">
+            <div class="board" id="warnBoard" aria-label="Warnsdorff's tour board"></div>
+            <div class="scanline"></div>
+          </div>
+          <div class="metrics">
+            <div><small>ELAPSED</small><strong id="warnTime">&mdash;</strong></div>
+            <div><small>MOVES</small><strong id="warnMoves">0</strong></div>
+            <div><small>EXPLORED</small><strong id="warnNodes">0</strong></div>
+            <div><small>STATUS</small><strong id="warnStatus">IDLE</strong></div>
+          </div>
+          <div class="progress" aria-hidden="true">
+            <span id="warnProgress"></span>
+          </div>
+        </article>
+        <article class="solver coral glass" id="backCard">
+          <div class="solver-head">
+            <div>
+              <p class="eyebrow"><i></i> BRUTE FORCE</p>
+              <h2>Classic <span>Backtracking</span></h2>
+              <p class="method">Depth-first search, natural move order</p>
+            </div>
+            <div class="complexity">SEARCH TREE<br /><b>O(8<sup>N</sup>)</b></div>
+          </div>
+          <button class="play-one" id="runBack" type="button">&#9654; PLAY BACKTRACKING</button>
+          <div class="board-wrap">
+            <div class="board" id="backBoard" aria-label="Backtracking tour board"></div>
+            <div class="scanline"></div>
+          </div>
+          <div class="metrics">
+            <div><small>ELAPSED</small><strong id="backTime">&mdash;</strong></div>
+            <div><small>MOVES</small><strong id="backMoves">0</strong></div>
+            <div><small>EXPLORED</small><strong id="backNodes">0</strong></div>
+            <div><small>STATUS</small><strong id="backStatus">IDLE</strong></div>
+          </div>
+          <div class="progress" aria-hidden="true">
+            <span id="backProgress"></span>
+          </div>
+        </article>
+      </section>
+      <section class="insight glass">
+        <span class="spark">&#10022;</span>
+        <div>
+          <p class="eyebrow">WHAT YOU'RE SEEING</p>
+          <h3 id="insightTitle">Tune the simulation, then begin the race.</h3>
+        </div>
+        <p id="insightText">
+          Warnsdorff ranks candidate moves by their future availability. The classic solver explores routes in its
+          original order, uncovering why heuristic choice matters.
+        </p>
+      </section>
+    </main>
+    <footer>
+      <span>KNIGHT'S TOUR LAB <b>v2.0</b></span
+      ><span>BUILT FOR EXPLORATION &middot; <b>&copy; 2026</b></span>
+    </footer>
+  </body>
+</html>
