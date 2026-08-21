@@ -1,7 +1,7 @@
 # Knight's Tour Lab
 
 <p align="center">
-  <img src="docs/preview.svg" alt="Knight's Tour Lab preview" width="100%" />
+  <img src="docs/screenshot.png" alt="Knight's Tour Lab running in the browser" width="100%" />
 </p>
 
 <p align="center">
@@ -61,7 +61,7 @@ The budget is a practical browser safeguard, not a formal complexity bound. Incr
 ├── app.js            # Solver logic, simulation state, rendering, and controls
 ├── index.html        # Semantic page structure and accessible controls
 ├── style.css         # Visual design, responsive layout, and animations
-├── docs/preview.svg  # Lightweight README preview artwork
+├── docs/screenshot.png # Browser screenshot used in the README
 ├── LICENSE           # MIT license
 └── README.md
 ```
