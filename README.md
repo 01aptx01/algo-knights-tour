@@ -59,51 +59,43 @@ While the rules can be explained in seconds, the search space for an unguided se
 
 <div align="center">
 
-### 1. Dual 3D Arena in Live Race
+### 1. Warnsdorff's Heuristic 3D Arena
 
-_Warnsdorff's Heuristic (left) vs Classic Backtracking (right) racing side-by-side with 3D jump trajectories, glowing Hamiltonian ribbons, and real-time telemetry._
+_Isolated view of Warnsdorff's heuristic card in action: parabolic 3D leaps, glowing golden Hamiltonian ribbon trail, move sequence badges, and real-time linear-time telemetry ($O(N)$)._
 
-<img src="docs/preview-dual-arena.png" alt="Dual 3D Arena in Action" width="95%" />
-
----
-
-### 2. High-Fidelity 3D Golden Knight & Tile Raycaster
-
-_Sculpted brass knight piece with hover coordinate tooltip on the high-contrast tournament board with studio specular reflections._
-
-<img src="docs/preview-knight-closeup.png" alt="3D Metallic Knight Close-up" width="95%" />
+<img src="docs/preview-warnsdorff.png" alt="Warnsdorff Heuristic 3D Arena" width="75%" />
 
 ---
 
-### 3. Tournament-Grade Wooden Chessboard (Top-Down View)
+### 2. Tournament-Grade Wooden Chessboard (Top-Down Tactical View)
 
 _Tactical 90&deg; bird's-eye view showcasing all 64 high-contrast light maple cream and warm caramel walnut squares, inner pinstripe frame, and crisp white perimeter coordinates (A&ndash;H, 1&ndash;8)._
 
-<img src="docs/preview-top-view.png" alt="Tournament Chessboard Top View" width="95%" />
+<img src="docs/preview-top-view.png" alt="Tournament Chessboard Top View" width="75%" />
 
 ---
 
-### 4. Multi-Perspective Camera System (Isometric 45&deg; View)
+### 3. Classic Backtracking Brute Force
 
-_Balanced 45-degree isometric projection for spatial depth inspection, easily toggled via the on-viewport camera deck._
+_Isolated view of the brute-force backtracking solver hitting combinatorial explosion ($O(8^{N^2})$), with search tree node count and search budget guardrails._
 
-<img src="docs/preview-camera-iso.png" alt="Multi-Angle Camera Views" width="95%" />
+<img src="docs/preview-backtracking.png" alt="Classic Backtracking Card" width="75%" />
 
 ---
 
-### 5. Interactive Configuration & Control Deck
+### 4. Interactive Configuration & Control Deck
 
 _Full control suite: board dimensions (5&times;5 to 10&times;10), animation speed presets (Slow, Normal, Fast, Turbo), search budget guardrails, tour constraints, and playback actions._
 
-<img src="docs/preview-controls-deck.png" alt="Interactive Control Deck" width="95%" />
+<img src="docs/preview-controls-deck.png" alt="Interactive Control Deck" width="100%" />
 
 ---
 
-### 6. Algorithmic Intelligence & Comparative Scorecard
+### 5. Algorithmic Intelligence & Comparative Scorecard
 
 _Deep algorithmic analysis comparing Warnsdorff's 100% linear walk efficiency against backtracking combinatorial tree explosion, with graph Hamiltonian classification._
 
-<img src="docs/preview-scorecard.png" alt="Telemetry and Analytics Scorecard" width="95%" />
+<img src="docs/preview-scorecard.png" alt="Telemetry and Analytics Scorecard" width="100%" />
 
 </div>
 
@@ -291,14 +283,13 @@ Then navigate to `http://localhost:3000` in your web browser.
 │   ├── OrbitControls.js     # Standalone camera controller
 │   └── three.min.js         # Core WebGL library (vendored for offline reliability)
 └── docs/
-    ├── hero-full.png        # Grand full-interface banner overview
-    ├── preview-dual-arena.png # Live Dual 3D Arena in race
-    ├── preview-knight-closeup.png # 3D metallic knight & tile hover tooltip
-    ├── preview-top-view.png # Tournament-grade chessboard top-down view
-    ├── preview-camera-iso.png # 45-degree isometric camera view
-    ├── preview-controls-deck.png # Interactive controls deck preview
-    ├── preview-scorecard.png # Algorithmic intelligence & scorecard
-    └── screenshot.png       # Primary project banner
+    ├── hero-full.png            # Grand full-interface banner overview
+    ├── preview-warnsdorff.png   # Tightly cropped Warnsdorff heuristic card
+    ├── preview-top-view.png     # Tournament-grade chessboard top-down view
+    ├── preview-backtracking.png # Tightly cropped classic backtracking card
+    ├── preview-controls-deck.png # Tightly cropped interactive controls deck
+    ├── preview-scorecard.png    # Tightly cropped algorithmic intelligence scorecard
+    └── screenshot.png          # High-resolution application preview
 ```
 
 ---
