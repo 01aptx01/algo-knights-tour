@@ -1,7 +1,7 @@
 # Knight's Tour 3D &middot; Grandmaster Algorithmic Lab
 
 <p align="center">
-  <img src="docs/hero-3d.png" alt="Knight's Tour 3D Lab - Live Dual 3D Arena" width="100%" />
+  <img src="docs/hero-full.png" alt="Knight's Tour 3D Lab - Grand Full Interface Overview" width="100%" />
 </p>
 
 <p align="center">
@@ -61,49 +61,49 @@ While the rules can be explained in seconds, the search space for an unguided se
 
 ### 1. Dual 3D Arena in Live Race
 
-_Warnsdorff's Heuristic (left) vs Classic Backtracking (right) solving in real time with 3D jump physics, glowing Hamiltonian ribbons, and step badges._
+_Warnsdorff's Heuristic (left) vs Classic Backtracking (right) racing side-by-side with 3D jump trajectories, glowing Hamiltonian ribbons, and real-time telemetry._
 
-<img src="docs/hero-3d.png" alt="Dual 3D Arena in Action" width="95%" />
+<img src="docs/preview-dual-arena.png" alt="Dual 3D Arena in Action" width="95%" />
 
 ---
 
-### 2. High-Fidelity 3D PBR Shaders & Golden Knight
+### 2. High-Fidelity 3D Golden Knight & Tile Raycaster
 
-_Procedural polished brass knight with multi-tiered pedestal base, beveled glossy amber lacquer tiles, and specular studio reflections._
+_Sculpted brass knight piece with hover coordinate tooltip on the high-contrast tournament board with studio specular reflections._
 
-<img src="docs/knight-closeup.png" alt="3D Metallic Knight Close-up" width="95%" />
+<img src="docs/preview-knight-closeup.png" alt="3D Metallic Knight Close-up" width="95%" />
 
 ---
 
 ### 3. Tournament-Grade Wooden Chessboard (Top-Down View)
 
-_High-contrast alternating tiles (Light Maple Cream vs Warm Caramel Walnut) framed with an inner cream pinstripe and crisp white rank & file border coordinates._
+_Tactical 90&deg; bird's-eye view showcasing all 64 high-contrast light maple cream and warm caramel walnut squares, inner pinstripe frame, and crisp white perimeter coordinates (A&ndash;H, 1&ndash;8)._
 
-<img src="docs/chessboard-top-view.png" alt="Tournament Chessboard Top View" width="95%" />
+<img src="docs/preview-top-view.png" alt="Tournament Chessboard Top View" width="95%" />
 
 ---
 
-### 4. Multi-Perspective Camera System
+### 4. Multi-Perspective Camera System (Isometric 45&deg; View)
 
-_Switch effortlessly between Cinematic 3/4 perspective, 45&deg; Isometric view, Tactical Top-Down overhead, or 360&deg; Orbit._
+_Balanced 45-degree isometric projection for spatial depth inspection, easily toggled via the on-viewport camera deck._
 
-<img src="docs/camera-views.png" alt="Multi-Angle Camera Views" width="95%" />
+<img src="docs/preview-camera-iso.png" alt="Multi-Angle Camera Views" width="95%" />
 
 ---
 
 ### 5. Interactive Configuration & Control Deck
 
-_Adjust board dimensions (5&times;5 up to 10&times;10), animation speed chips, search budget guardrails, tour constraints, and tile raycasting._
+_Full control suite: board dimensions (5&times;5 to 10&times;10), animation speed presets (Slow, Normal, Fast, Turbo), search budget guardrails, tour constraints, and playback actions._
 
-<img src="docs/controls-deck.png" alt="Interactive Control Deck" width="95%" />
+<img src="docs/preview-controls-deck.png" alt="Interactive Control Deck" width="95%" />
 
 ---
 
-### 6. Telemetry & Comparative Analytics Scorecard
+### 6. Algorithmic Intelligence & Comparative Scorecard
 
-_Real-time performance telemetry tracking execution time in milliseconds, nodes explored, moves completed, and search efficiency._
+_Deep algorithmic analysis comparing Warnsdorff's 100% linear walk efficiency against backtracking combinatorial tree explosion, with graph Hamiltonian classification._
 
-<img src="docs/telemetry-scorecard.png" alt="Telemetry and Analytics Scorecard" width="95%" />
+<img src="docs/preview-scorecard.png" alt="Telemetry and Analytics Scorecard" width="95%" />
 
 </div>
 
@@ -291,12 +291,13 @@ Then navigate to `http://localhost:3000` in your web browser.
 │   ├── OrbitControls.js     # Standalone camera controller
 │   └── three.min.js         # Core WebGL library (vendored for offline reliability)
 └── docs/
-    ├── hero-3d.png          # High-resolution Dual 3D Arena preview
-    ├── knight-closeup.png   # 3D metallic knight & PBR tiles close-up
-    ├── chessboard-top-view.png # Tournament-grade chessboard top-down view
-    ├── camera-views.png     # Multi-perspective camera showcase
-    ├── controls-deck.png    # Interactive controls deck preview
-    ├── telemetry-scorecard.png # Real-time telemetry scorecard
+    ├── hero-full.png        # Grand full-interface banner overview
+    ├── preview-dual-arena.png # Live Dual 3D Arena in race
+    ├── preview-knight-closeup.png # 3D metallic knight & tile hover tooltip
+    ├── preview-top-view.png # Tournament-grade chessboard top-down view
+    ├── preview-camera-iso.png # 45-degree isometric camera view
+    ├── preview-controls-deck.png # Interactive controls deck preview
+    ├── preview-scorecard.png # Algorithmic intelligence & scorecard
     └── screenshot.png       # Primary project banner
 ```
 
