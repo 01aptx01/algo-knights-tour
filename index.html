@@ -5,144 +5,420 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An interactive comparison of Warnsdorff's heuristic and backtracking for the knight's tour problem."
+      content="High-fidelity 3D WebGL visualizer comparing Warnsdorff's heuristic vs classic backtracking for the Knight's Tour problem."
     />
-    <title>Knight's Tour &middot; Luminous Lab</title>
+    <title>Knight's Tour 3D &middot; Grandmaster Algorithmic Lab</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <script src="vendor/three.min.js"></script>
+    <script src="vendor/OrbitControls.js"></script>
+    <script>
+      if (typeof THREE === 'undefined') {
+        document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"><\/script>',
+        );
+      }
+    </script>
     <script src="app.js" defer></script>
   </head>
   <body>
-    <div class="aurora a1"></div>
-    <div class="aurora a2"></div>
-    <div class="noise"></div>
+    <div class="background-effects">
+      <div class="aurora a1"></div>
+      <div class="aurora a2"></div>
+      <div class="grid-mesh"></div>
+      <div class="noise"></div>
+    </div>
 
-    <header>
-      <a class="brand" href="#top" aria-label="Knight Lab home">
-        <span class="brand-mark">&#9822;</span><span>Knight<span>/</span>Lab</span>
-      </a>
-      <div class="header-pill"><i></i> CLOSED TOUR ENGINE <b id="topStatus">READY</b></div>
+    <header class="app-header">
+      <div class="header-left">
+        <a class="brand" href="#top" aria-label="Knight's Tour 3D Lab">
+          <span class="brand-knight" aria-hidden="true">&#9822;</span>
+          <span class="brand-text">KNIGHT<span>/</span>3D <small>LAB</small></span>
+        </a>
+        <div class="header-pill">
+          <span class="pill-dot"></span>
+          <span class="pill-label">ENGINE:</span>
+          <b id="topStatus">READY</b>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundToggle" class="icon-btn" type="button" title="Toggle Sound FX" aria-label="Toggle Sound FX">
+          <span id="soundIcon">&#128266;</span>
+        </button>
+        <button id="cameraResetAll" class="icon-btn" type="button" title="Reset Camera Views" aria-label="Reset Camera">
+          <span>&#127916;</span>
+        </button>
+        <button
+          id="shortcutsBtn"
+          class="icon-btn"
+          type="button"
+          title="Keyboard Shortcuts"
+          aria-label="Keyboard Shortcuts"
+        >
+          <span>&#9000;</span>
+        </button>
+      </div>
     </header>
 
-    <main id="top">
+    <main id="top" class="app-main">
       <section class="hero">
-        <div>
-          <p class="eyebrow">ALGORITHM VISUALIZER &middot; 01</p>
-          <h1>Make every move<br /><em>matter.</em></h1>
+        <div class="hero-content">
+          <div class="eyebrow-badge"><span class="badge-dot"></span> 3D GRAPHICS &middot; ALGORITHMIC VISUALIZER</div>
+          <h1>The Royal Leap,<br /><em>Crafted in 3D.</em></h1>
           <p class="lede">
-            Watch two solvers race to complete a closed knight's tour. One trusts the board. One explores every
-            possibility.
+            Experience the Knight's Tour problem brought to life with physical 3D jump trajectories, glossy lacquered
+            timber tiles, and polished brass chess pieces. Watch Warnsdorff's heuristic race against depth-first
+            backtracking in real time.
           </p>
+          <div class="hero-stats">
+            <div class="stat-pill"><strong id="heroSquares">64</strong><span>SQUARES</span></div>
+            <div class="stat-pill"><strong>3D PBR</strong><span>STUDIO SHADERS</span></div>
+            <div class="stat-pill"><strong>0 NPM</strong><span>ZERO DEPENDENCY</span></div>
+          </div>
         </div>
-        <div class="hero-orbit" aria-hidden="true">
-          <div class="orbit orbit-1"></div>
-          <div class="orbit orbit-2"></div>
-          <div class="floating-knight">&#9822;</div>
-          <span>64<br /><small>SQUARES</small></span>
+        <div class="hero-card glass">
+          <div class="hero-card-inner">
+            <div class="card-icon">&#9822;</div>
+            <div class="card-info">
+              <span class="card-sub">TACTILE INTERACTION</span>
+              <h4>Click Any 3D Tile</h4>
+              <p>
+                Directly pick starting squares on the 3D board, rotate in 360&deg;, or zoom in to inspect the jump
+                physics.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="controls glass" aria-label="Simulation controls">
-        <label
-          >BOARD <output id="sizeValue" for="size">8 &times; 8</output
-          ><input id="size" type="range" min="5" max="10" value="8"
-        /></label>
-        <label
-          >ANIMATION <output id="speedValue" for="speed">500 ms</output
-          ><input id="speed" type="range" min="50" max="5000" step="50" value="500"
-        /></label>
-        <label
-          >START SQUARE
-          <select id="start" aria-label="Start square"></select
-        ></label>
-        <label
-          >SEARCH BUDGET <output id="budgetValue" for="budget">80k</output
-          ><input id="budget" type="range" min="10000" max="300000" step="10000" value="80000"
-        /></label>
-        <label class="toggle-label"
-          >TOUR TYPE <span><b>Closed loop</b><input id="closed" type="checkbox" checked /><i></i></span
-        ></label>
-        <label class="toggle-label"
-          >LOOP <span><b>Repeat tour</b><input id="loop" type="checkbox" checked /><i></i></span
-        ></label>
-        <button id="run" type="button"><span>&#9654;</span> RACE BOTH</button>
-        <button id="reset" class="ghost" type="button" aria-label="Reset simulation">&#8634;</button>
+      <!-- Interactive Controls Panel -->
+      <section class="controls glass" aria-label="Simulation configuration deck">
+        <div class="controls-top">
+          <div class="control-group">
+            <div class="label-row">
+              <label for="size">BOARD SIZE</label>
+              <output id="sizeValue" for="size">8 &times; 8 (64 squares)</output>
+            </div>
+            <input id="size" type="range" min="5" max="10" value="8" />
+            <div class="range-ticks">
+              <span>5x5</span><span>6x6</span><span>7x7</span><span>8x8</span><span>9x9</span><span>10x10</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="label-row">
+              <label for="speed">ANIMATION SPEED</label>
+              <output id="speedValue" for="speed">200 ms</output>
+            </div>
+            <input id="speed" type="range" min="10" max="1200" step="10" value="200" />
+            <div class="speed-presets">
+              <button type="button" class="preset-chip" data-speed="600">Slow</button>
+              <button type="button" class="preset-chip active" data-speed="200">Normal</button>
+              <button type="button" class="preset-chip" data-speed="60">Fast</button>
+              <button type="button" class="preset-chip" data-speed="15">Turbo</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="label-row">
+              <label for="start">START SQUARE</label>
+              <span class="sub-label">(Or click 3D tile)</span>
+            </div>
+            <select id="start" aria-label="Start square position"></select>
+          </div>
+
+          <div class="control-group">
+            <div class="label-row">
+              <label for="budget">SEARCH BUDGET</label>
+              <output id="budgetValue" for="budget">80,000 nodes</output>
+            </div>
+            <input id="budget" type="range" min="10000" max="300000" step="10000" value="80000" />
+          </div>
+        </div>
+
+        <div class="controls-divider"></div>
+
+        <div class="controls-bottom">
+          <div class="toggle-group">
+            <label class="toggle-switch">
+              <input id="closed" type="checkbox" checked />
+              <span class="switch-slider"></span>
+              <span class="switch-text"><b>Closed Tour</b><small>Return to origin</small></span>
+            </label>
+            <label class="toggle-switch">
+              <input id="loop" type="checkbox" checked />
+              <span class="switch-slider"></span>
+              <span class="switch-text"><b>Repeat Loop</b><small>Continuous replay</small></span>
+            </label>
+            <label class="toggle-switch">
+              <input id="showTrail" type="checkbox" checked />
+              <span class="switch-slider"></span>
+              <span class="switch-text"><b>3D Path Ribbon</b><small>Glowing trajectory</small></span>
+            </label>
+            <label class="toggle-switch">
+              <input id="showLabels" type="checkbox" checked />
+              <span class="switch-slider"></span>
+              <span class="switch-text"><b>Step Badges</b><small>Move sequence #</small></span>
+            </label>
+          </div>
+
+          <div class="action-buttons">
+            <button id="run" class="btn-primary" type="button">
+              <span class="btn-icon">&#9654;</span>
+              <span class="btn-text">RACE BOTH SOLVERS</span>
+            </button>
+            <button id="pauseBtn" class="btn-secondary" type="button" title="Pause/Resume (Space)" disabled>
+              <span id="pauseIcon">&#10074;&#10074;</span>
+            </button>
+            <button id="stepBackBtn" class="btn-secondary" type="button" title="Step Back" disabled>
+              <span>&#9198;</span>
+            </button>
+            <button id="stepForwardBtn" class="btn-secondary" type="button" title="Step Forward" disabled>
+              <span>&#9197;</span>
+            </button>
+            <button
+              id="reset"
+              class="btn-ghost"
+              type="button"
+              title="Reset Simulation (R)"
+              aria-label="Reset simulation"
+            >
+              <span>&#8634;</span>
+            </button>
+          </div>
+        </div>
       </section>
 
-      <div class="caption">
-        <span>LIVE DUAL SIMULATION</span>
-        <p>Closed tour required <i></i> Knight must return to its origin</p>
+      <!-- Arena Section -->
+      <div class="caption-bar">
+        <div class="caption-title">
+          <span class="sparkle">&#10022;</span>
+          <span>LIVE 3D DUAL SIMULATION ARENA</span>
+        </div>
+        <div class="caption-meta">
+          <span id="tourRequirement">Closed Tour Required &middot; Knight must leap back to start square</span>
+        </div>
       </div>
-      <section class="arena">
-        <article class="solver blue glass" id="warnCard">
-          <div class="solver-head">
+
+      <section class="arena" aria-label="3D visualizer boards">
+        <!-- Warnsdorff's Card -->
+        <article class="solver-card gold glass" id="warnCard">
+          <div class="card-header">
             <div>
-              <p class="eyebrow"><i></i> HEURISTIC</p>
+              <div class="badge-heur"><span class="pulse"></span> HEURISTIC SEARCH</div>
               <h2>Warnsdorff's <span>Rule</span></h2>
-              <p class="method">Lowest onward-degree first</p>
+              <p class="method">Lowest onward-degree square first</p>
             </div>
-            <div class="complexity">SMART PATH<br /><b>O(N)</b></div>
+            <div class="complexity-badge">
+              <span class="comp-label">TIME COMPLEXITY</span>
+              <b class="comp-val">O(N)</b>
+            </div>
           </div>
-          <button class="play-one" id="runWarn" type="button">&#9654; PLAY WARNSDORFF</button>
-          <div class="board-wrap">
-            <div class="board" id="warnBoard" aria-label="Warnsdorff's tour board"></div>
-            <div class="scanline"></div>
+
+          <div class="viewport-wrap" id="warnWrap">
+            <!-- 3D Canvas -->
+            <div class="canvas-3d" id="warn3dContainer"></div>
+
+            <!-- Viewport HUD Overlay -->
+            <div class="viewport-hud">
+              <div class="camera-presets">
+                <button
+                  type="button"
+                  class="cam-btn active"
+                  data-board="warn"
+                  data-cam="cinematic"
+                  title="Cinematic 3/4 Perspective"
+                >
+                  3/4
+                </button>
+                <button type="button" class="cam-btn" data-board="warn" data-cam="iso" title="Isometric View">
+                  ISO
+                </button>
+                <button type="button" class="cam-btn" data-board="warn" data-cam="top" title="Top-Down Tactical View">
+                  TOP
+                </button>
+                <button type="button" class="cam-btn" data-board="warn" data-cam="reset" title="Reset Camera">
+                  &#8635;
+                </button>
+              </div>
+              <div class="hud-tooltip" id="warnTileHover">Square: --</div>
+              <div class="hud-tag">PBR AMBER GLOSS</div>
+            </div>
           </div>
-          <div class="metrics">
-            <div><small>ELAPSED</small><strong id="warnTime">&mdash;</strong></div>
-            <div><small>MOVES</small><strong id="warnMoves">0</strong></div>
-            <div><small>EXPLORED</small><strong id="warnNodes">0</strong></div>
-            <div><small>STATUS</small><strong id="warnStatus">IDLE</strong></div>
+
+          <button class="btn-solo" id="runWarn" type="button"><span>&#9654;</span> PLAY WARNSDORFF ALONE</button>
+
+          <!-- Telemetry Grid -->
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <span class="metric-label">TIME</span>
+              <strong id="warnTime" class="metric-value">&mdash;</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">MOVES VISITED</span>
+              <strong id="warnMoves" class="metric-value">0 / 64</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">NODES EXPLORED</span>
+              <strong id="warnNodes" class="metric-value">0</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">STATUS</span>
+              <strong id="warnStatus" class="metric-value status-idle">IDLE</strong>
+            </div>
           </div>
-          <div class="progress" aria-hidden="true">
-            <span id="warnProgress"></span>
+
+          <div class="progress-bar-wrap">
+            <div class="progress-fill" id="warnProgress"></div>
           </div>
         </article>
-        <article class="solver coral glass" id="backCard">
-          <div class="solver-head">
+
+        <!-- Backtracking Card -->
+        <article class="solver-card coral glass" id="backCard">
+          <div class="card-header">
             <div>
-              <p class="eyebrow"><i></i> BRUTE FORCE</p>
+              <div class="badge-heur coral"><span class="pulse coral"></span> BRUTE FORCE SEARCH</div>
               <h2>Classic <span>Backtracking</span></h2>
-              <p class="method">Depth-first search, natural move order</p>
+              <p class="method">Depth-first search, standard natural move order</p>
             </div>
-            <div class="complexity">SEARCH TREE<br /><b>O(8<sup>N</sup>)</b></div>
+            <div class="complexity-badge coral">
+              <span class="comp-label">TIME COMPLEXITY</span>
+              <b class="comp-val">O(8<sup>N&sup2;</sup>)</b>
+            </div>
           </div>
-          <button class="play-one" id="runBack" type="button">&#9654; PLAY BACKTRACKING</button>
-          <div class="board-wrap">
-            <div class="board" id="backBoard" aria-label="Backtracking tour board"></div>
-            <div class="scanline"></div>
+
+          <div class="viewport-wrap" id="backWrap">
+            <!-- 3D Canvas -->
+            <div class="canvas-3d" id="back3dContainer"></div>
+
+            <!-- Viewport HUD Overlay -->
+            <div class="viewport-hud">
+              <div class="camera-presets">
+                <button
+                  type="button"
+                  class="cam-btn active"
+                  data-board="back"
+                  data-cam="cinematic"
+                  title="Cinematic 3/4 Perspective"
+                >
+                  3/4
+                </button>
+                <button type="button" class="cam-btn" data-board="back" data-cam="iso" title="Isometric View">
+                  ISO
+                </button>
+                <button type="button" class="cam-btn" data-board="back" data-cam="top" title="Top-Down Tactical View">
+                  TOP
+                </button>
+                <button type="button" class="cam-btn" data-board="back" data-cam="reset" title="Reset Camera">
+                  &#8635;
+                </button>
+              </div>
+              <div class="hud-tooltip" id="backTileHover">Square: --</div>
+              <div class="hud-tag">PBR MAHOGANY GLOSS</div>
+            </div>
           </div>
-          <div class="metrics">
-            <div><small>ELAPSED</small><strong id="backTime">&mdash;</strong></div>
-            <div><small>MOVES</small><strong id="backMoves">0</strong></div>
-            <div><small>EXPLORED</small><strong id="backNodes">0</strong></div>
-            <div><small>STATUS</small><strong id="backStatus">IDLE</strong></div>
+
+          <button class="btn-solo coral" id="runBack" type="button">
+            <span>&#9654;</span> PLAY BACKTRACKING ALONE
+          </button>
+
+          <!-- Telemetry Grid -->
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <span class="metric-label">TIME</span>
+              <strong id="backTime" class="metric-value">&mdash;</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">MOVES VISITED</span>
+              <strong id="backMoves" class="metric-value">0 / 64</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">NODES EXPLORED</span>
+              <strong id="backNodes" class="metric-value">0</strong>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">STATUS</span>
+              <strong id="backStatus" class="metric-value status-idle">IDLE</strong>
+            </div>
           </div>
-          <div class="progress" aria-hidden="true">
-            <span id="backProgress"></span>
+
+          <div class="progress-bar-wrap coral">
+            <div class="progress-fill coral" id="backProgress"></div>
           </div>
         </article>
       </section>
-      <section class="insight glass">
-        <span class="spark">&#10022;</span>
-        <div>
-          <p class="eyebrow">WHAT YOU'RE SEEING</p>
-          <h3 id="insightTitle">Tune the simulation, then begin the race.</h3>
+
+      <!-- Real-Time Telemetry Comparison & Algorithmic Insight -->
+      <section class="insight-panel glass">
+        <div class="insight-header">
+          <div class="insight-icon">&#10022;</div>
+          <div>
+            <span class="insight-eyebrow">ALGORITHMIC INTELLIGENCE</span>
+            <h3 id="insightTitle">Configure the board parameters and race the 3D visualizers.</h3>
+          </div>
         </div>
         <p id="insightText">
-          Warnsdorff ranks candidate moves by their future availability. The classic solver explores routes in its
-          original order, uncovering why heuristic choice matters.
+          Warnsdorff's algorithm assesses onward freedom at every step: by prioritizing squares that leave fewer onward
+          moves, it avoids early dead ends and converts an intractable exponential search tree into a linear-time walk.
         </p>
+
+        <!-- Comparative Scorecard -->
+        <div class="scorecard">
+          <div class="score-item">
+            <span class="score-label">WARNSDORFF EFFICIENCY</span>
+            <span class="score-number" id="warnEfficiency">100%</span>
+            <span class="score-sub">Direct linear trajectory without wasteful backtracking</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">BACKTRACKING SEARCH TREE</span>
+            <span class="score-number" id="backPruningRatio">&mdash;</span>
+            <span class="score-sub" id="backSubText">Unranked permutations rapidly exhaust browser budget</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">GRAPH TOPOLOGY</span>
+            <span class="score-number" id="graphType">Hamiltonian Cycle</span>
+            <span class="score-sub">Visits every vertex $V$ exactly once and returns to origin</span>
+          </div>
+        </div>
       </section>
+
+      <!-- Keyboard Shortcuts Modal / Drawer -->
+      <div id="shortcutsModal" class="modal-backdrop" hidden>
+        <div class="modal-card glass">
+          <div class="modal-header">
+            <h4>Keyboard Shortcuts</h4>
+            <button id="closeModal" class="icon-btn" type="button">&times;</button>
+          </div>
+          <div class="shortcuts-list">
+            <div class="shortcut-row"><kbd>Space</kbd> <span>Race / Pause / Resume</span></div>
+            <div class="shortcut-row"><kbd>R</kbd> <span>Reset Simulation</span></div>
+            <div class="shortcut-row"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> <span>Step Backward / Forward</span></div>
+            <div class="shortcut-row">
+              <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <span>Camera View Presets (3/4, ISO, TOP)</span>
+            </div>
+            <div class="shortcut-row"><kbd>M</kbd> <span>Toggle Sound Effects</span></div>
+          </div>
+        </div>
+      </div>
     </main>
-    <footer>
-      <span>KNIGHT'S TOUR LAB <b>v2.0</b></span
-      ><span>BUILT FOR EXPLORATION &middot; <b>&copy; 2026</b></span>
+
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>KNIGHT'S TOUR 3D LAB <b>v3.0</b></span>
+        <span class="footer-sep">&bull;</span>
+        <span>HIGH-FIDELITY WEBGL &middot; PROCEDURAL PBR SHADERS</span>
+      </div>
+      <div class="footer-right">
+        <span>ZERO RUNTIME DEPENDENCY</span>
+        <span class="footer-sep">&bull;</span>
+        <span>RELEASED UNDER <a href="LICENSE" target="_blank" rel="noopener">MIT LICENSE</a> &copy; 2026</span>
+      </div>
     </footer>
   </body>
 </html>
